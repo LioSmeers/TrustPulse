@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { googlePlaceId, fetchGooglePlace } from '@/lib/google-places';
+import { googlePlaceId, fetchGooglePlace, type GooglePlace } from '@/lib/google-places';
 export const runtime = 'nodejs';
-const attempts = new Map<string, number>();
+const pending = new Map<string, Promise<GooglePlace>>();
 const reply = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { 'Cache-Control': 'private, no-store' } });
 async function workspace(request: Request) {
   const token = request.headers.get('authorization')?.match(/^Bearer (.+)$/)?.[1];
@@ -28,10 +28,13 @@ export async function POST(request: Request) {
   if (!key) return reply({ error: 'Google is nog niet geactiveerd. Voeg de Google Places-serversleutel toe aan Netlify.' }, 503);
   const id = googlePlaceId(b.google_review_url || '');
   if (!id) return reply({ error: 'Sla bij Instellingen een Google-reviewlink met placeid op. Een korte g.page-link bevat die ID niet.' }, 400);
-  const now = Date.now();
-  for (const [businessId, until] of attempts) if (until <= now) attempts.delete(businessId);
-  if ((attempts.get(b.id) || 0) > now) return reply({ error: 'Wacht een minuut voordat je Google opnieuw ververst.' }, 429);
-  attempts.set(b.id, now + 60000);
-  try { return reply(await fetchGooglePlace(id, key)); }
+  const requestKey = `${b.id}:${id}`;
+  let result = pending.get(requestKey);
+  if (!result) {
+    result = fetchGooglePlace(id, key);
+    pending.set(requestKey, result);
+  }
+  try { return reply(await result); }
   catch (error) { return reply({ error: error instanceof Error ? error.message : 'Google is tijdelijk niet bereikbaar.' }, 502); }
+  finally { if (pending.get(requestKey) === result) pending.delete(requestKey); }
 }

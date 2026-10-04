@@ -11,47 +11,51 @@ export function GoogleReviews(_props: { compact?: boolean }) {
   const [place, setPlace] = useState<GooglePlace | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [cooldown, setCooldown] = useState(false);
   useEffect(() => {
     let active = true;
+    let loading = false;
+    const controller = new AbortController();
     setSetup(null); setPlace(null); setError('');
-    async function check() {
+    async function refresh() {
+      if (!active || loading || document.visibilityState === 'hidden') return;
+      loading = true;
+      setBusy(true); setError('');
       try {
         const { data: session } = await getSupabase().auth.getSession();
         if (!session.session) throw new Error('Log eerst in.');
-        const r = await fetch('/api/google-reviews', { headers: { Authorization: `Bearer ${session.session.access_token}` }, cache: 'no-store' });
-        const result = await r.json();
-        if (!r.ok) throw new Error(result.error || 'De Google-koppeling is niet bereikbaar.');
-        if (active) setSetup(result);
-      } catch (e) { if (active) setError(e instanceof Error ? e.message : 'Google-koppeling controleren lukt niet.'); }
+        const options = { headers: { Authorization: `Bearer ${session.session.access_token}` }, cache: 'no-store' as const, signal: controller.signal };
+        const check = await fetch('/api/google-reviews', options);
+        const configuration = await check.json();
+        if (!check.ok) throw new Error(configuration.error || 'De Google-koppeling is niet bereikbaar.');
+        if (!active) return;
+        setSetup(configuration);
+        if (!configuration.configured || !configuration.hasPlaceId) return;
+        const response = await fetch('/api/google-reviews', { ...options, method: 'POST' });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Google-score ophalen lukt niet.');
+        if (active) setPlace(result);
+      } catch (e) {
+        if (active) setError(e instanceof Error ? e.message : 'Google is tijdelijk niet bereikbaar.');
+      } finally {
+        loading = false;
+        if (active) setBusy(false);
+      }
     }
-    void check();
-    return () => { active = false; };
+    const onVisible = () => { if (document.visibilityState === 'visible') void refresh(); };
+    document.addEventListener('visibilitychange', onVisible);
+    void refresh();
+    return () => {
+      active = false;
+      controller.abort();
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [data.business.id, data.business.googleReviewUrl]);
-  useEffect(() => {
-    if (!cooldown) return;
-    const timer = setTimeout(() => setCooldown(false), 60000);
-    return () => clearTimeout(timer);
-  }, [cooldown]);
-  async function load() {
-    if (busy || cooldown) return;
-    setBusy(true); setError(''); setCooldown(true); setPlace(null);
-    try {
-      const { data: session } = await getSupabase().auth.getSession();
-      if (!session.session) throw new Error('Log eerst in.');
-      const r = await fetch('/api/google-reviews', { method: 'POST', headers: { Authorization: `Bearer ${session.session.access_token}` }, cache: 'no-store' });
-      const result = await r.json();
-      if (!r.ok) throw new Error(result.error || 'Google-score ophalen lukt niet.');
-      setPlace(result);
-    } catch (e) { setError(e instanceof Error ? e.message : 'Google is tijdelijk niet bereikbaar.'); }
-    finally { setBusy(false); }
-  }
   return <section className="panel google-public-panel">
     <div className="section-heading"><h2>Google-score</h2><span className="google-source-brand"><Google size={24} />Google Maps</span></div>
     {!setup && !error && <p role="status">Koppeling controleren…</p>}
     {setup && !setup.configured && <p>De Google-koppeling is nog niet ingesteld.</p>}
     {setup && !setup.hasPlaceId && <p>Sla een reviewlink met <code>placeid</code> op bij <Link className="text-link" href="/dashboard/settings">Instellingen</Link>.</p>}
-    {setup?.configured && setup.hasPlaceId && <><button className="button secondary" disabled={busy || cooldown} onClick={() => void load()}>{busy ? 'Google ophalen…' : cooldown ? 'Opnieuw beschikbaar na één minuut' : 'Google-score ophalen'}</button></>}
+    {busy && setup?.configured && setup.hasPlaceId && !place && <p role="status">Google-score laden…</p>}
     {error && <p role="alert">{error}</p>}
     {place && <>
       <div className="google-public-rating"><strong>{place.rating?.toFixed(1) ?? '—'} / 5</strong><Stars value={place.rating ?? 0} /></div>
