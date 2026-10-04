@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { GoogleReviews } from '@/components/google-reviews';
 import {
   Send,
   Star,
@@ -142,7 +143,7 @@ export default function Dashboard() {
             <span className="live-dot" /> Je overzicht is bijgewerkt
           </div>
         </section>
-        <section className="panel reputation-panel">
+        {online ? <GoogleReviews compact key={data.business.googleReviewUrl} /> : <section className="panel reputation-panel">
           <div className="section-heading">
             <h2>Jouw Google-rating</h2>
             <Google size={24} />
@@ -173,7 +174,7 @@ export default function Dashboard() {
               ? 'Opgeslagen reviews · Google is nog niet gekoppeld.'
               : 'Voorbeeldreviews · Google is nog niet gekoppeld.'}
           </div>
-        </section>
+        </section>}
       </div>
       <div className="attention-note">
         <span className="note-icon">

@@ -3032,3 +3032,14 @@ tbody tr:hover {
   .button, .text-link, .mobile-nav a, .mobile-nav button { touch-action: manipulation; }
   :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
 }
+
+.google-public-panel { padding: 24px; min-width: 0; }
+.google-public-panel > p { margin: 16px 0; line-height: 1.7; color: #667085; }
+.google-public-panel h3 { margin-top: 24px; }
+.google-source-brand { display: flex; align-items: center; gap: 8px; font-size: 12px; white-space: nowrap; }
+.google-public-rating { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+.google-public-rating strong { font-size: 28px; }
+.google-public-panel .review-grid { margin-top: 24px; }
+.google-public-panel .review-card { border: 1px solid var(--border); border-radius: 12px; min-width: 0; }
+.google-public-panel .review-card p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.google-public-panel .text-link { display: inline-flex; align-items: center; min-height: 44px; }

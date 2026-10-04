@@ -1,4 +1,5 @@
 'use client';
+import { GoogleReviews } from '@/components/google-reviews';
 import { useState } from 'react';
 import { useStore } from '@/components/provider';
 import { PageTitle, Stars, Google, formatDate, Empty } from '@/components/ui';
@@ -13,6 +14,7 @@ export default function Reviews() {
       (filter === 'Google' && r.platform === 'Google') ||
       String(r.stars) === filter,
   );
+  if (online) return <><PageTitle title="Reviews" description="De openbare beoordelingen van jouw Google Bedrijfsprofiel." /><GoogleReviews key={data.business.googleReviewUrl} /></>;
   return (
     <>
       <PageTitle

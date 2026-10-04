@@ -55,7 +55,7 @@ Aflevermeldingen gaan naar `/api/sms/status?token=...`. De officiële SDK contro
 
 ## Wat nog moet worden gekoppeld
 
-E-mailmeldingen zijn nog niet gekoppeld. De instellingen bewaren alleen de meldingsvoorkeur. Er is geen koppeling om Google-reviews op te halen; een klik op de Google-link telt niet als gepubliceerde review.
+E-mailmeldingen zijn nog niet gekoppeld. De instellingen bewaren alleen de meldingsvoorkeur. Openbare Google-reviews kunnen via Places API (New) worden opgehaald zodra de serversleutel is ingesteld; zie docs/google-setup.md. De API levert een selectie van maximaal vijf reviews, naast de totale rating en het totale aantal beoordelingen. Een klik op de Google-link telt niet als gepubliceerde review.
 
 Uitnodigingen kunnen online worden opgeslagen en als link gekopieerd. Om de link op een ander toestel te openen, moet de webapp ook op een bereikbaar publiek webadres staan. Echte SMS vereist een publiek HTTPS-adres in `NEXT_PUBLIC_APP_URL`. De SMS-preview en gekopieerde link gebruiken dat adres wanneer ingesteld, anders het browseradres.
 
@@ -73,7 +73,7 @@ Voeg klanten afzonderlijk toe of importeer maximaal 100 klanten uit een CSV UTF-
 
 Vanuit de klantenlijst opent **Reviewlink maken** een vooraf ingevuld verzoek. Klanten zonder telefoonnummer kunnen ook een link krijgen. Klantenbeheer en linkopslag gebruiken de bestaande Supabase-functies; daarvoor is geen SMS-migratie nodig.
 
-De actuele automatische suite bevat 25 tests. De productiebuild en TypeScript-controle slagen. Handmatig toevoegen, navigeren en het bewaren van een reviewlink zijn in een geïsoleerde browserdemo getest. De volledige CSV-bestandskeuze is nog niet in de browser gecontroleerd: de gebruikte browserextensie blokkeerde het selecteren van een lokaal testbestand.
+De actuele automatische suite bevat 31 tests. De productiebuild en TypeScript-controle slagen. Handmatig toevoegen, navigeren en het bewaren van een reviewlink zijn in een geïsoleerde browserdemo getest. De volledige CSV-bestandskeuze is nog niet in de browser gecontroleerd: de gebruikte browserextensie blokkeerde het selecteren van een lokaal testbestand.
 
 ## Bestanden
 
