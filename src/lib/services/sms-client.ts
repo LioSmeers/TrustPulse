@@ -1,3 +1,4 @@
+import { apiRequest } from '@/lib/platform';
 import { getSupabase } from '../supabase/client';
 
 export interface SmsSetup {
@@ -8,7 +9,7 @@ export interface SmsSetup {
 export async function smsRequest(method: 'GET' | 'POST', input?: unknown) {
   const { data } = await getSupabase().auth.getSession();
   if (!data.session) throw new Error('Log eerst in.');
-  const response = await fetch('/api/sms', {
+  const response = await apiRequest('/api/sms', {
     method,
     headers: {
       Authorization: `Bearer ${data.session.access_token}`,

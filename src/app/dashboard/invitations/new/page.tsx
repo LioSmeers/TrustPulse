@@ -1,4 +1,5 @@
 'use client';
+import { copyText, nativeBridge, publicAppOrigin } from '@/lib/platform';
 import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -48,7 +49,7 @@ function InvitationForm() {
     }
   }, [ready, data.customers, searchParams]);
   useEffect(() => {
-    setOrigin(window.location.origin);
+    setOrigin(publicAppOrigin());
     setToken(crypto.randomUUID().replaceAll('-', ''));
   }, []);
   useEffect(() => {
@@ -117,12 +118,19 @@ function InvitationForm() {
         await record();
         setPrepared(true);
       }
-      await navigator.clipboard.writeText(link);
+      await copyText(link);
       setCopied(true);
       setSent(true);
     } catch {
       setError('Opslaan of kopiëren lukt niet. Probeer opnieuw; alleen een opgeslagen link is beschikbaar.');
     }
+  }
+  async function share() {
+    setError('');
+    try {
+      if (!prepared) { await record(); setPrepared(true); }
+      await nativeBridge()?.share(link);
+    } catch { setError('Delen is geannuleerd of niet beschikbaar. De opgeslagen link kun je kopiëren.'); }
   }
   return (
     <>
@@ -161,6 +169,7 @@ function InvitationForm() {
                     : 'De link is gekopieerd. Je kunt de klantpagina in deze browser testen.'}
               </Success>
               <div className="success-actions">
+                {nativeBridge() && <button className="button secondary" onClick={share}>Deel klantlink</button>}
                 <Link href={`/r/${token}`} target="_blank" className="button primary">
                   Bekijk de klantpagina <ExternalLink size={17} />
                 </Link>
@@ -309,7 +318,8 @@ function InvitationForm() {
                       Jouw reviewlink
                       <input value={link} readOnly onFocus={(e) => e.target.select()} />
                     </label>}
-                    <button
+                    {nativeBridge() && <button type="button" className="button secondary" disabled={!origin || saving} onClick={share}>Deel klantlink</button>}
+                <button
                       type="button"
                       className="button primary full"
                       onClick={copy}

@@ -13,3 +13,10 @@ docs/screenshots/supabase-*.png
 node_modules-icloud-backup-*/
 .next-icloud-backup-*/
 package-lock.icloud-backup-*.json
+
+# Native generated build artifacts and local signing settings
+mobile/dist/
+mobile/ios/App/App/public/
+mobile/ios/App/App/capacitor.config.json
+mobile/ios/App/App.xcodeproj/xcuserdata/
+mobile/ios/App/build/

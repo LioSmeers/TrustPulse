@@ -1,4 +1,5 @@
 'use client';
+import { apiRequest } from '@/lib/platform';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useStore } from './provider';
@@ -24,13 +25,13 @@ export function GoogleReviews(_props: { compact?: boolean }) {
         const { data: session } = await getSupabase().auth.getSession();
         if (!session.session) throw new Error('Log eerst in.');
         const options = { headers: { Authorization: `Bearer ${session.session.access_token}` }, cache: 'no-store' as const, signal: controller.signal };
-        const check = await fetch('/api/google-reviews', options);
+        const check = await apiRequest('/api/google-reviews', options);
         const configuration = await check.json();
         if (!check.ok) throw new Error(configuration.error || 'De Google-koppeling is niet bereikbaar.');
         if (!active) return;
         setSetup(configuration);
         if (!configuration.configured || !configuration.hasPlaceId) return;
-        const response = await fetch('/api/google-reviews', { ...options, method: 'POST' });
+        const response = await apiRequest('/api/google-reviews', { ...options, method: 'POST' });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Google-score ophalen lukt niet.');
         if (active) setPlace(result);
@@ -43,11 +44,13 @@ export function GoogleReviews(_props: { compact?: boolean }) {
     }
     const onVisible = () => { if (document.visibilityState === 'visible') void refresh(); };
     document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('trustpulse:resume', onVisible);
     void refresh();
     return () => {
       active = false;
       controller.abort();
       document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('trustpulse:resume', onVisible);
     };
   }, [data.business.id, data.business.googleReviewUrl]);
   return <section className="panel google-public-panel">

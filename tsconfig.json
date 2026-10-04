@@ -37,6 +37,7 @@
   "exclude": [
     "node_modules",
     "node_modules-icloud-backup-*",
-    ".next-icloud-backup-*"
+    ".next-icloud-backup-*",
+    "mobile"
   ]
 }

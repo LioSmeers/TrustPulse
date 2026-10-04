@@ -1,4 +1,5 @@
 'use client';
+import { publicAppOrigin } from '@/lib/platform';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase/client';
@@ -30,7 +31,7 @@ export default function Login() {
             email: email.trim(),
             password,
             options: {
-              emailRedirectTo: `${window.location.origin}/login`,
+              emailRedirectTo: `${publicAppOrigin()}/login`,
               data: { name: name.trim(), business_name: business.trim() },
             },
           })
