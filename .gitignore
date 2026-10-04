@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+.DS_Store
+
+# Local session notes and screenshots of private account dashboards
+memory/
+docs/screenshots/supabase-*.png
+
+# Recoverable copies of iCloud-only build dependencies
+node_modules-icloud-backup-*/
+.next-icloud-backup-*/
+package-lock.icloud-backup-*.json
