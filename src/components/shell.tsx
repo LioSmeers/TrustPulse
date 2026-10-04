@@ -12,8 +12,10 @@ import {
   ChevronDown,
   ArrowUpRight,
   X,
+  Menu,
+  LogOut,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase/client';
 import { useStore } from './provider';
@@ -36,6 +38,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data, online, user, authReady, ready, error, saving, refresh } = useStore();
   const router = useRouter();
+  const moreMenu = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    moreMenu.current?.close();
+    setShowNotifications(false);
+  }, [pathname]);
   useEffect(() => {
     if (online && authReady && !user) router.replace('/login');
   }, [online, authReady, user, router]);
@@ -86,7 +93,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <p className="nav-label">WERKRUIMTE</p>
         <nav>
           {navigation.map(([href, label, Icon]) => (
-            <Link href={href} key={href} className={`nav-item ${selected(href) ? 'active' : ''}`}>
+            <Link href={href} key={href} className={`nav-item ${selected(href) ? 'active' : ''}`} aria-current={selected(href) ? 'page' : undefined}>
               <Icon size={20} />
               <span>{label}</span>
               {label === 'Feedback' && count > 0 && <b>{count}</b>}
@@ -190,13 +197,35 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
       <nav className="mobile-nav" aria-label="Hoofdnavigatie">
-        {navigation.map(([href, label, Icon]) => (
-          <Link key={href} href={href} className={selected(href) ? 'active' : ''}>
-            <Icon size={21} />
-            <span>{label}</span>
+        {navigation.filter(([, label]) => label !== 'Reviews' && label !== 'Instellingen').map(([href, label, Icon]) => (
+          <Link key={href} href={href} className={selected(href) ? 'active' : ''} aria-current={selected(href) ? 'page' : undefined}>
+            <span className="mobile-tab-icon"><Icon size={22} />
+              {label === 'Feedback' && count > 0 && <b className="mobile-feedback-count">{count > 99 ? '99+' : count}</b>}
+            </span>
+            <span>{label === 'Uitnodigingen' ? 'Verzoeken' : label}</span>
           </Link>
         ))}
+        <button className={pathname.startsWith('/dashboard/reviews') || pathname.startsWith('/dashboard/settings') || pathname === '/dashboard/setup' ? 'active' : ''}
+          aria-label="Meer opties" aria-haspopup="dialog" aria-controls="mobile-more-menu" onClick={() => moreMenu.current?.showModal()}>
+          <Menu size={22} /><span>Meer</span>
+        </button>
       </nav>
+      <dialog ref={moreMenu} id="mobile-more-menu" className="mobile-more-menu" aria-labelledby="mobile-more-title"
+        onClick={(event) => { if (event.target === event.currentTarget) moreMenu.current?.close(); }}>
+        <div className="mobile-more-heading"><div><h2 id="mobile-more-title">Meer</h2><p>{data.business.name}</p></div>
+          <button className="icon-button" aria-label="Menu sluiten" onClick={() => moreMenu.current?.close()}><X size={22} /></button>
+        </div>
+        <nav aria-label="Meer functies">
+          <Link href="/dashboard/reviews"><MessageSquare size={22} />Reviews</Link>
+          <Link href="/dashboard/settings"><Settings size={22} />Instellingen</Link>
+          <Link href="/dashboard/setup"><ShieldCheck size={22} />Startklaar</Link>
+          {previewToken && <Link href={`/r/${previewToken}`} target="_blank" onClick={() => moreMenu.current?.close()}><ArrowUpRight size={22} />Bekijk je klantpagina</Link>}
+          {online && <button onClick={async () => {
+            const result = await getSupabase().auth.signOut();
+            if (!result.error) { moreMenu.current?.close(); router.replace('/login'); }
+          }}><LogOut size={22} />Uitloggen</button>}
+        </nav>
+      </dialog>
     </div>
   );
 }

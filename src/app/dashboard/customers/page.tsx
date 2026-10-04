@@ -42,7 +42,7 @@ export default function Customers() {
           </div>
         </div>
         <div className="table-scroll">
-          <table>
+          <table className="mobile-records">
             <thead>
               <tr>
                 <th>Naam</th>
@@ -63,7 +63,7 @@ export default function Customers() {
                 const review = data.reviews.find((r) => r.customerId === c.id);
                 return (
                   <tr key={c.id}>
-                    <td>
+                    <td data-label="Naam">
                       <div className="table-person">
                         <span className="customer-avatar">
                           {c.name
@@ -75,16 +75,16 @@ export default function Customers() {
                         <strong>{c.name}</strong>
                       </div>
                     </td>
-                    <td>{c.phone || '—'}</td>
-                    <td>{inv ? formatDate(inv.sentAt) : '—'}</td>
-                    <td>
+                    <td data-label="Telefoon">{c.phone || '—'}</td>
+                    <td data-label="Laatste verzoek">{inv ? formatDate(inv.sentAt) : '—'}</td>
+                    <td data-label="Rating">
                       {rating ? (
                         <Stars value={rating.stars} />
                       ) : (
                         <span className="muted">Nog geen rating</span>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Status">
                       {feedback ? (
                         <Badge tone={feedback.status === 'open' ? 'amber' : 'green'}>
                           {feedback.status === 'open' ? 'Feedback open' : 'Feedback opgelost'}
@@ -103,7 +103,7 @@ export default function Customers() {
                         </Badge>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Actie">
                       <Link
                         className="text-link"
                         href={`/dashboard/invitations/new?customer=${encodeURIComponent(c.id)}`}

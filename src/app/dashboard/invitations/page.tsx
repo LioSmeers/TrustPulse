@@ -39,7 +39,7 @@ export default function Invitations() {
       </div>
       <section className="panel">
         <div className="table-scroll">
-          <table>
+          <table className="mobile-records">
             <thead>
               <tr>
                 <th>Klant</th>
@@ -53,12 +53,12 @@ export default function Invitations() {
             <tbody>
               {rows.map((i) => (
                 <tr key={i.id}>
-                  <td>
+                  <td data-label="Klant">
                     <strong>{data.customers.find((c) => c.id === i.customerId)?.name}</strong>
                   </td>
-                  <td>{formatDate(i.sentAt)}</td>
-                  <td className="message-cell">{i.message}</td>
-                  <td>
+                  <td data-label="Aangemaakt">{formatDate(i.sentAt)}</td>
+                  <td data-label="Bericht" className="message-cell">{i.message}</td>
+                  <td data-label="Status">
                     <Badge
                       tone={
                         i.status === 'completed'
@@ -75,7 +75,7 @@ export default function Invitations() {
                       }
                     </Badge>
                   </td>
-                  <td>
+                  <td data-label="SMS-aflevering">
                     {i.channel === 'sms'
                       ? deliveryLabels[i.deliveryStatus || 'unknown'] || 'Onbekend'
                       : online
@@ -83,7 +83,7 @@ export default function Invitations() {
                         : 'Demo'}
                     {i.deliveryError && <small> · fout {i.deliveryError}</small>}
                   </td>
-                  <td>
+                  <td data-label="Klantpagina">
                     <Link href={`/r/${i.token}`} target="_blank" className="text-link">
                       Bekijken <ExternalLink size={14} />
                     </Link>

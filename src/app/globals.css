@@ -2990,3 +2990,45 @@ tbody tr:hover {
 .customer-manager label { display: block; max-width: 560px; margin: 18px 0; }
 .customer-manager label input { display: block; width: 100%; margin-top: 8px; }
 .customer-manager .table-scroll { max-height: 340px; margin: 16px 0; }
+
+/* Comfortable iPhone controls, cards and safe-area navigation. */
+.mobile-more-menu { border: 0; border-radius: 24px; padding: 24px; width: min(440px, calc(100% - 32px)); color: var(--text); background: white; }
+.mobile-more-menu::backdrop { background: #10182880; }
+.mobile-more-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.mobile-more-heading h2 { font-size: 22px; }
+.mobile-more-heading p { margin-top: 5px; color: #667085; overflow-wrap: anywhere; }
+.mobile-more-menu nav { display: grid; gap: 8px; }
+.mobile-more-menu nav a, .mobile-more-menu nav button { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 52px; padding: 12px; border: 0; border-radius: 12px; background: #f5f7fa; color: var(--text); font: inherit; text-align: left; }
+.mobile-tab-icon { position: relative; display: flex; }
+.mobile-feedback-count { position: absolute; top: -6px; right: -12px; min-width: 17px; padding: 2px 4px; border-radius: 10px; font-size: 10px; line-height: 13px; background: #b42318; color: white; }
+@media (max-width: 700px) {
+  html { scroll-padding-top: 90px; scroll-padding-bottom: 110px; }
+  .workspace-main, .main-content { min-width: 0; }
+  .topbar { padding-top: calc(14px + env(safe-area-inset-top)); height: calc(79px + env(safe-area-inset-top)); }
+  .main-content { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+  .mobile-nav { padding: 8px max(4px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left)); }
+  .mobile-nav a, .mobile-nav button { flex: 1; min-width: 0; min-height: 52px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; padding: 4px 0; font-size: 11px; font-weight: 600; color: #667085; background: transparent; border: 0; }
+  .mobile-nav .active { color: var(--primary); }
+  .mobile-more-menu { margin: auto 12px calc(12px + env(safe-area-inset-bottom)); width: calc(100% - 24px); max-width: none; max-height: 80dvh; overflow-y: auto; }
+  .main-content button, .main-content .button, .icon-button { min-height: 44px; }
+  .icon-button { min-width: 44px; }
+  .main-content input:not([type="checkbox"]):not([type="radio"]):not([type="color"]), .main-content textarea, .main-content select, .auth-card input { font-size: 16px; min-height: 44px; }
+  .page-title { flex-wrap: wrap; gap: 16px; }
+  .page-title > .button { width: 100%; }
+  .filter-tabs { flex-wrap: wrap; }
+  .filter-tabs button { flex: 1 1 auto; min-height: 44px; }
+  .notification-panel { width: min(330px, calc(100vw - 32px)); }
+  .mobile-records, .mobile-records tbody { display: block; white-space: normal; }
+  .mobile-records thead { display: none; }
+  .mobile-records tr { display: block; padding: 16px; border-top: 1px solid var(--border); }
+  .mobile-records td { display: grid; grid-template-columns: 115px minmax(0, 1fr); align-items: center; gap: 12px; padding: 7px 0; border: 0; font-size: 13px; overflow-wrap: anywhere; }
+  .mobile-records td::before { content: attr(data-label); font-size: 12px; color: #667085; }
+  .mobile-records td:first-child { display: block; font-size: 15px; padding-bottom: 12px; }
+  .mobile-records td:first-child::before { display: none; }
+  .mobile-records .message-cell { max-width: none; white-space: normal; }
+  .mobile-records .badge { white-space: normal; width: fit-content; font-size: 11px; }
+  .mobile-records .text-link { min-height: 44px; display: inline-flex; align-items: center; }
+  .mobile-records .table-person strong { min-width: 0; overflow-wrap: anywhere; }
+  .button, .text-link, .mobile-nav a, .mobile-nav button { touch-action: manipulation; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+}
