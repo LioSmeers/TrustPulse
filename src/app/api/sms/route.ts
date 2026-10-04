@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import twilio from 'twilio';
+import { invitationMessage } from '@/lib/invitation-message';
 import { smsConfig, validSms } from '@/lib/services/sms-config';
 import { smsAdmin, smsUser } from '@/lib/services/sms-server';
 export const runtime = 'nodejs';
@@ -35,6 +36,10 @@ export async function POST(request: Request) {
     input = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: 'Ongeldig verzoek.' }, { status: 400 });
+  }
+  if (input && typeof input === 'object' && typeof input.message === 'string' &&
+      typeof input.token === 'string' && /^[a-f0-9]{32}$/.test(input.token)) {
+    input.message = invitationMessage(input.message, `${c.origin}/r/${input.token}`);
   }
   if (!validSms(input, c.origin!))
     return NextResponse.json(

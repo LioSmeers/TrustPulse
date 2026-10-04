@@ -1,4 +1,5 @@
 'use client';
+import { invitationScript } from '@/lib/invitation-message';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Save, Upload, Check, Store, Star, Palette, Bell } from 'lucide-react';
@@ -151,13 +152,13 @@ function SettingsForm({
               Standaard SMS-bericht
               <textarea
                 rows={4}
-                value={business.defaultSms}
-                onChange={(e) => field('defaultSms', e.target.value)}
+                value={invitationScript(business.defaultSms)}
+                onChange={(e) => field('defaultSms', invitationScript(e.target.value))}
                 required
                 maxLength={480}
               />
               <small>
-                Gebruik {'{naam}'}, {'{bedrijf}'} en {'{link}'} voor persoonlijke berichten.
+                Gebruik {'{naam}'} en {'{bedrijf}'} voor persoonlijke berichten. De klantlink wordt automatisch toegevoegd en kan niet worden aangepast.
               </small>
             </label>
           </div>

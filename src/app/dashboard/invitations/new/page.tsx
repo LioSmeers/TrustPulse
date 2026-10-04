@@ -6,6 +6,7 @@ import { ArrowLeft, Send, User, Info, Copy, Check, ExternalLink, Pencil } from '
 import { useStore } from '@/components/provider';
 import { PageTitle, Success } from '@/components/ui';
 import { mockSmsProvider } from '@/lib/services/sms';
+import { invitationScript, invitationMessage } from '@/lib/invitation-message';
 import { addDemoInvitation } from '@/lib/invitations';
 import { smsRequest, type SmsSetup } from '@/lib/services/sms-client';
 export default function NewInvitation() {
@@ -58,12 +59,10 @@ function InvitationForm() {
       );
   }, [online]);
   const link = `${online && smsSetup?.origin ? smsSetup.origin : origin}/r/${token}`;
-  const message =
-    custom ??
-    data.business.defaultSms
-      .replaceAll('{naam}', name.trim() || 'Thomas')
-      .replaceAll('{bedrijf}', data.business.name)
-      .replaceAll('{link}', link);
+  const script = invitationScript(custom ?? data.business.defaultSms
+    .replaceAll('{naam}', name.trim() || 'Thomas')
+    .replaceAll('{bedrijf}', data.business.name));
+  const message = invitationMessage(script, link);
   function record() {
     return update((d) =>
       addDemoInvitation(d, {
@@ -241,11 +240,16 @@ function InvitationForm() {
                     <textarea
                       id="sms"
                       className="message-textarea"
-                      value={message}
+                      value={script}
                       readOnly={!editing}
-                      onChange={(e) => setCustom(e.target.value)}
-                      maxLength={640}
+                      onChange={(e) => setCustom(invitationScript(e.target.value))}
+                      maxLength={480}
                     />
+                    <label>
+                      Persoonlijke klantlink
+                      <input value={link} readOnly onFocus={(e) => e.target.select()} />
+                      <small>Deze link wordt automatisch aan je bericht toegevoegd.</small>
+                    </label>
                     <div className="character-count">{message.length} tekens</div>
                     <button
                       className="button primary full"
@@ -253,7 +257,8 @@ function InvitationForm() {
                         sending ||
                         saving ||
                         !origin ||
-                        !message.trim() ||
+                        !script.trim() ||
+                        message.length > 640 ||
                         (online && !smsSetup?.ready)
                       }
                     >
