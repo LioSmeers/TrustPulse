@@ -31,6 +31,7 @@ function InvitationForm() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [prepared, setPrepared] = useState(false);
   const [error, setError] = useState('');
   const [origin, setOrigin] = useState('');
   const [token, setToken] = useState('preview');
@@ -112,12 +113,15 @@ function InvitationForm() {
   }
   async function copy() {
     try {
-      if (!copied) await record();
+      if (!prepared) {
+        await record();
+        setPrepared(true);
+      }
       await navigator.clipboard.writeText(link);
       setCopied(true);
       setSent(true);
     } catch {
-      setError('Kopiëren lukt niet. Selecteer en kopieer de link hieronder.');
+      setError('Opslaan of kopiëren lukt niet. Probeer opnieuw; alleen een opgeslagen link is beschikbaar.');
     }
   }
   return (
@@ -169,6 +173,7 @@ function InvitationForm() {
                     setPhone('');
                     setCustom(null);
                     setCopied(false);
+                    setPrepared(false);
                     setEditing(false);
                     setToken(crypto.randomUUID().replaceAll('-', ''));
                   }}
@@ -247,8 +252,8 @@ function InvitationForm() {
                     />
                     <label>
                       Persoonlijke klantlink
-                      <input value={link} readOnly onFocus={(e) => e.target.select()} />
-                      <small>Deze link wordt automatisch aan je bericht toegevoegd.</small>
+                      <input value="Wordt automatisch toegevoegd bij verzending" readOnly />
+                      <small>Je persoonlijke klantlink wordt geactiveerd zodra de uitnodiging is opgeslagen.</small>
                     </label>
                     <div className="character-count">{message.length} tekens</div>
                     <button
@@ -296,14 +301,14 @@ function InvitationForm() {
                       <Info size={18} />
                       <p>
                         {online
-                          ? 'De uitnodiging wordt online bewaard. Om de link op een ander toestel te openen, moet ook de webapp op een publiek adres staan.'
+                          ? 'We slaan de uitnodiging eerst op. Daarna kopiëren we de actieve klantlink, zodat je klant hem meteen kan openen.'
                           : 'Deze demo bewaart de uitnodiging in deze browser. De link werkt nog niet op het toestel van je klant.'}
                       </p>
                     </div>
-                    <label>
+                    {prepared && <label>
                       Jouw reviewlink
                       <input value={link} readOnly onFocus={(e) => e.target.select()} />
-                    </label>
+                    </label>}
                     <button
                       type="button"
                       className="button primary full"
@@ -311,7 +316,7 @@ function InvitationForm() {
                       disabled={!origin || saving}
                     >
                       {copied ? <Check size={18} /> : <Copy size={18} />}{' '}
-                      {copied ? 'Link gekopieerd' : 'Kopieer reviewlink'}
+                      {copied ? 'Link gekopieerd' : 'Maak en kopieer klantlink'}
                     </button>
                     {copied && (
                       <Link className="text-link" href={`/r/${token}`} target="_blank">
