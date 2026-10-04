@@ -1,6 +1,8 @@
 # TrustPulse op iPhone
 
 De eerste iOS-projectversie staat in `mobile/ios/App/App.xcodeproj`.
+Op deze Mac staat de gecontroleerde ontwikkelkopie in
+`/Users/liosmeers/Developer/TrustPulse`, buiten Desktop/iCloud.
 De beheerinterface wordt lokaal in de app gebundeld. Supabase bewaart de bestaande
 werkruimte; de Netlify-server handelt Google en sms af. De klantpagina's blijven
 publieke HTTPS-links op Netlify. Een app-installatie is voor klanten niet nodig.
