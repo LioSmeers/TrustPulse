@@ -47,7 +47,7 @@ De bestaande voorbeelddata wordt niet naar Supabase overgezet. Nieuwe werkruimte
 
 De geauthenticeerde route `/api/sms` verstuurt echte SMS-berichten via de officiële Twilio-bibliotheek. De online app simuleert verzending niet: de knop blijft uitgeschakeld zolang de configuratie of databasemigratie ontbreekt. De lokale demo blijft simuleren.
 
-Volg [docs/sms-setup.md](docs/sms-setup.md) voor Twilio-account, afzender, servergeheimen, de aanvullende SQL-migratie en een gecontroleerde test naar je eigen nummer. Er is nog geen Twilio-account gekoppeld en er is nog geen echte SMS-test gedaan.
+Volg [docs/sms-setup.md](docs/sms-setup.md) voor Twilio-account, afzender, servergeheimen, de aanvullende SQL-migratie en een gecontroleerde test naar je eigen nummer. Het Twilio-trialaccount is aangemaakt en een console-test is ontvangen. Verzending vanuit de app is nog niet actief: een geschikte afzender, de serverconfiguratie, SMS-migratie en een publiek HTTPS-adres ontbreken nog.
 
 De server controleert de Supabase-gebruiker en bewaart klant en uitnodiging voordat Twilio wordt aangeroepen. Een token kan slechts eenmaal verzending reserveren; herhaalde verzoeken versturen geen extra bericht. De limiet per zaak is 10 verzoeken per minuut en 100 per 24 uur, inclusief mislukte pogingen. Dit is een app-limiet, geen Twilio-bestedingsplafond. Bij een timeout blijft de verzending onzeker: controleer Twilio voordat je een nieuwe uitnodiging maakt. Er zijn geen automatische herverzendingen. Een procesuitval tijdens verzending kan dezelfde handmatige controle vereisen.
 
@@ -73,7 +73,7 @@ Voeg klanten afzonderlijk toe of importeer maximaal 100 klanten uit een CSV UTF-
 
 Vanuit de klantenlijst opent **Reviewlink maken** een vooraf ingevuld verzoek. Klanten zonder telefoonnummer kunnen ook een link krijgen. Klantenbeheer en linkopslag gebruiken de bestaande Supabase-functies; daarvoor is geen SMS-migratie nodig.
 
-De actuele automatische suite bevat 26 tests. De productiebuild en TypeScript-controle slagen. Handmatig toevoegen, navigeren en het bewaren van een reviewlink zijn in een geïsoleerde browserdemo getest. De volledige CSV-bestandskeuze is nog niet in de browser gecontroleerd: de gebruikte browserextensie blokkeerde het selecteren van een lokaal testbestand.
+De actuele automatische suite bevat 25 tests. De productiebuild en TypeScript-controle slagen. Handmatig toevoegen, navigeren en het bewaren van een reviewlink zijn in een geïsoleerde browserdemo getest. De volledige CSV-bestandskeuze is nog niet in de browser gecontroleerd: de gebruikte browserextensie blokkeerde het selecteren van een lokaal testbestand.
 
 ## Bestanden
 
